@@ -34,16 +34,34 @@
 # result = get_file_content("calculator", "lorem.txt")
 # print("Result for 'lorem.txt' file:\n", result)
 
-from functions.get_write_file import write_file
+#from functions.get_write_file import write_file
 
 # Test lorem text
-result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
-print("Results for 'lorem.txt' file:\n", result)
+# result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
+# print("Results for 'lorem.txt' file:\n", result)
 
 # Test pkg/morelorem text
-result = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
-print("Results for 'pkg/morelorem.txt' file:\n", result)
+# result = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
+# print("Results for 'pkg/morelorem.txt' file:\n", result)
 
 # Test forbidden text
-result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
-print("Results for '/tmp/temp.txt' file:\n", result)
+# result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
+# print("Results for '/tmp/temp.txt' file:\n", result)
+
+from functions.run_python import run_python_file
+
+# Test for main.py file
+result = run_python_file("calculator", "main.py")
+print("Results for 'main.py' file:\n", result)
+
+# Test for tests.py file
+result = run_python_file("calculator", "tests.py")
+print("Results for 'tests.py' file:\n", result)
+
+# Test for outside of the directory file
+result = run_python_file("calculator", "../main.py")
+print("Results for file outside of the directory:\n", result)
+
+# Test for file that does not exist
+result = run_python_file("calculator", "nonexistent.py")
+print("Results for file that does not exist:\n", result)
