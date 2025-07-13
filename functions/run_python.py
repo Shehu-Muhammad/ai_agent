@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from google.genai import types
 
 def run_python_file(working_directory, file_path):
     # absolute_working_directory path
@@ -41,3 +42,18 @@ def run_python_file(working_directory, file_path):
             return f'Error: File "{file_path}" not found.'
     else:
         return f'Error: Cannot execute "{file_path}" as it is outside the permitted working directory'
+
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Executes the file if it is a python file, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The python file that will be executed.",
+            ),
+        },
+        required=["file_path"],
+    ),
+)
