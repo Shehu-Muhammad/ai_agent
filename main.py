@@ -82,34 +82,44 @@ def main():
             schema_write_file,
         ]
     )
-    response = client.models.generate_content(
-        model="gemini-2.0-flash-001", 
-        contents=messages,
-        config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt),
-    )
+    try:
+        for _ in range(20):
+            response = client.models.generate_content(
+                model="gemini-2.0-flash-001", 
+                contents=messages,
+                config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt),
+            )
 
-    if response.function_calls:
-        for function_call_part in response.function_calls:
-            function_call_result = call_function(function_call_part, verbose = verbose)
+            candidates = response.candidates
+            for candidate in candidates:
+                messages.append(candidate.content)
 
-            # Error check: Is the function response present?
-            if not (
-                hasattr(function_call_result.parts[0], "function_response")
-                and hasattr(function_call_result.parts[0].function_response, "response")
-            ):
-                raise Exception("No function response found!")
+            if response.function_calls:
+                for function_call_part in response.function_calls:
+                    function_call_result = call_function(function_call_part, verbose = verbose)
+                    messages.append(function_call_result)
 
-            # Only print response if verbose
+                    # Error check: Is the function response present?
+                    if not (
+                        hasattr(function_call_result.parts[0], "function_response")
+                        and hasattr(function_call_result.parts[0].function_response, "response")
+                    ):
+                        raise Exception("No function response found!")
+
+                    # Only print response if verbose
+                    if verbose:
+                        print(f"-> {function_call_result.parts[0].function_response.response}")
+            
+            else:
+                print(response.text)
+                break
+
             if verbose:
-                print(f"-> {function_call_result.parts[0].function_response.response}")
-    
-    else:
-        print(response.text)
-
-    if verbose:
-        print(f"User prompt: {message}")
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+                print(f"User prompt: {message}")
+                print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+                print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
